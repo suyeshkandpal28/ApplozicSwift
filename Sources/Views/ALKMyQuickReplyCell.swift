@@ -13,6 +13,8 @@ public class ALKMyQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
         enum StateView {
             static let bottom: CGFloat = 1
             static let right: CGFloat = 2
+            static let height: CGFloat = 9
+            static let width: CGFloat = 17
         }
 
         enum TimeLabel {
@@ -47,10 +49,11 @@ public class ALKMyQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     override func setupStyle() {
         super.setupStyle()
         timeLabel.setStyle(ALKMessageStyle.time)
+        setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
     }
 
     public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
-        // Set time
+        super.update(viewModel: viewModel)
         timeLabel.text = viewModel.time
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
         guard let suggestedReply = viewModel.suggestedReply() else {
@@ -79,7 +82,6 @@ public class ALKMyQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     private func setupConstraints() {
         contentView.addViewsForAutolayout(views: [stateView, timeLabel, quickReplyView])
         bringSubviewToFront(stateView)
-        bringSubviewToFront(timeLabel)
 
         NSLayoutConstraint.activate([
             quickReplyView.topAnchor.constraint(
@@ -90,18 +92,19 @@ public class ALKMyQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
                 equalTo: contentView.trailingAnchor,
                 constant: -ChatCellPadding.SentMessage.QuickReply.right
             ),
-            quickReplyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: ChatCellPadding.SentMessage.QuickReply.left),
+            quickReplyView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: ChatCellPadding.SentMessage.QuickReply.left),
             quickReplyView.bottomAnchor.constraint(
-                equalTo: timeLabel.topAnchor,
+                equalTo: contentView.bottomAnchor,
                 constant: -ChatCellPadding.SentMessage.QuickReply.bottom
             ),
 
-            stateView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -1 * Padding.StateView.bottom),
-            stateView.trailingAnchor.constraint(equalTo: quickReplyView.trailingAnchor, constant: -1 * Padding.StateView.right),
-            stateView.heightAnchor.constraint(equalToConstant: 9.0),
-            stateView.widthAnchor.constraint(equalToConstant: 9),
+            stateView.bottomAnchor.constraint(equalTo: quickReplyView.bottomAnchor, constant: -1 * Padding.StateView.bottom),
+            stateView.trailingAnchor.constraint(equalTo: quickReplyView.leadingAnchor, constant: -1 * Padding.StateView.right),
+            stateView.heightAnchor.constraint(equalToConstant: Padding.StateView.height),
+            stateView.widthAnchor.constraint(equalToConstant: Padding.StateView.width),
+            timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor),
             timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * Padding.TimeLabel.right),
-            timeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Padding.TimeLabel.bottom),
+            timeLabel.bottomAnchor.constraint(equalTo: quickReplyView.bottomAnchor, constant: Padding.TimeLabel.bottom),
 
         ])
     }

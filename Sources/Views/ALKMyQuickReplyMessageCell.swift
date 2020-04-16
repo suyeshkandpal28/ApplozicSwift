@@ -75,7 +75,7 @@ public class ALKMyQuickReplyMessageCell: ALKChatBaseCell<ALKMessageViewModel> {
                 equalTo: contentView.trailingAnchor,
                 constant: -ChatCellPadding.SentMessage.QuickReply.right
             ),
-            quickReplyView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            quickReplyView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: ChatCellPadding.SentMessage.QuickReply.left),
             quickReplyView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor,
                 constant: -ChatCellPadding.SentMessage.QuickReply.bottom

@@ -8,7 +8,7 @@
 import Foundation
 import Kingfisher
 
-public class ALKFriendQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
+public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
     var timeLabel: UILabel = {
         let lb = UILabel()
         lb.isOpaque = true
@@ -80,7 +80,6 @@ public class ALKFriendQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
 
     public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
-        super.update(viewModel: viewModel)
         let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
         if let url = viewModel.avatarURL {
             let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
@@ -90,26 +89,37 @@ public class ALKFriendQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
         }
         nameLabel.text = viewModel.displayName
         timeLabel.text = viewModel.time
-
-        guard let suggestedReplies = viewModel.suggestedReply() else {
+        var suggestedReplyData: SuggestedReplyMessage?
+        if viewModel.messageType == .button {
+            suggestedReplyData = viewModel.linkOrSubmitButton()
+        } else if viewModel.messageType == .quickReply {
+            suggestedReplyData = viewModel.suggestedReply()
+        }
+        guard let data = suggestedReplyData else {
             quickReplyView.isHidden = true
             return
         }
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.ReceivedMessage.QuickReply.left + ChatCellPadding.ReceivedMessage.Message.right)
-        quickReplyView.update(model: suggestedReplies, maxWidth: quickReplyViewWidth)
+        quickReplyView.update(model: data, maxWidth: quickReplyViewWidth)
     }
 
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
         let minimumHeight: CGFloat = 60 // 55 is avatar image... + padding
         let height: CGFloat = 30 // 6 + 16 + 4 + 2 + 2
-        guard let suggestedReplies = viewModel.suggestedReply() else {
+        var suggestedReplyData: SuggestedReplyMessage?
+        if viewModel.messageType == .button {
+            suggestedReplyData = viewModel.linkOrSubmitButton()
+        } else if viewModel.messageType == .quickReply {
+            suggestedReplyData = viewModel.suggestedReply()
+        }
+        guard let data = suggestedReplyData else {
             return minimumHeight
         }
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.ReceivedMessage.QuickReply.left + ChatCellPadding.ReceivedMessage.Message.right)
         return height
-            + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
+            + SuggestedReplyView.rowHeight(model: data, maxWidth: quickReplyViewWidth)
             + ChatCellPadding.ReceivedMessage.QuickReply.top
             + ChatCellPadding.ReceivedMessage.QuickReply.bottom
     }
@@ -152,7 +162,7 @@ public class ALKFriendQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
 }
 
-extension ALKFriendQuickReplyCell: Tappable {
+extension ALKFriendQuickReplyButtonCell: Tappable {
     public func didTap(index: Int?, title: String) {
         guard let quickReplySelected = quickReplySelected, let index = index else { return }
         quickReplySelected(index, title)

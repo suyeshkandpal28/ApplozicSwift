@@ -24,7 +24,6 @@ public class ALKFriendQuickReplyMessageCell: ALKChatBaseCell<ALKMessageViewModel
     }
 
     public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
-        super.update(viewModel: viewModel)
         let messageWidth = maxWidth -
             (ChatCellPadding.ReceivedMessage.Message.left + ChatCellPadding.ReceivedMessage.Message.right)
         let height = ALKFriendMessageView.rowHeight(viewModel: viewModel, width: messageWidth)

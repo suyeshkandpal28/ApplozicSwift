@@ -8,7 +8,7 @@
 import Foundation
 import Kingfisher
 
-public class ALKMyQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
+public class ALKMyQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
     enum Padding {
         enum StateView {
             static let bottom: CGFloat = 1
@@ -53,28 +53,39 @@ public class ALKMyQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     }
 
     public func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
-        super.update(viewModel: viewModel)
         timeLabel.text = viewModel.time
         setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
-        guard let suggestedReply = viewModel.suggestedReply() else {
+        var suggestedReplyData: SuggestedReplyMessage?
+        if viewModel.messageType == .button {
+            suggestedReplyData = viewModel.linkOrSubmitButton()
+        } else if viewModel.messageType == .quickReply {
+            suggestedReplyData = viewModel.suggestedReply()
+        }
+        guard let data = suggestedReplyData else {
             quickReplyView.isHidden = true
             return
         }
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.SentMessage.QuickReply.left + ChatCellPadding.SentMessage.QuickReply.right)
-        quickReplyView.update(model: suggestedReply, maxWidth: quickReplyViewWidth)
+        quickReplyView.update(model: data, maxWidth: quickReplyViewWidth)
     }
 
     public class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
         var height: CGFloat = 10 // Padding
         height += 20 // (6 + 4) + 10 for extra padding
-        guard let suggestedReplies = viewModel.suggestedReply() else {
+        var suggestedReplyData: SuggestedReplyMessage?
+        if viewModel.messageType == .button {
+            suggestedReplyData = viewModel.linkOrSubmitButton()
+        } else if viewModel.messageType == .quickReply {
+            suggestedReplyData = viewModel.suggestedReply()
+        }
+        guard let data = suggestedReplyData else {
             return height
         }
         let quickReplyViewWidth = maxWidth -
             (ChatCellPadding.SentMessage.QuickReply.left + ChatCellPadding.SentMessage.QuickReply.right)
         return height
-            + SuggestedReplyView.rowHeight(model: suggestedReplies, maxWidth: quickReplyViewWidth)
+            + SuggestedReplyView.rowHeight(model: data, maxWidth: quickReplyViewWidth)
             + ChatCellPadding.SentMessage.QuickReply.top
             + ChatCellPadding.SentMessage.QuickReply.bottom
     }

@@ -67,7 +67,7 @@ open class ALKMyMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
                 constant: ChatCellPadding.SentMessage.MessageButton.top
             ),
             buttonView.trailingAnchor.constraint(
-                equalTo: contentView.trailingAnchor,
+                greaterThanOrEqualTo: contentView.trailingAnchor,
                 constant: -ChatCellPadding.SentMessage.MessageButton.right
             ),
             buttonView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
@@ -147,7 +147,7 @@ class ALKFriendMessageButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
                 equalTo: contentView.leadingAnchor,
                 constant: ChatCellPadding.ReceivedMessage.MessageButton.left
             ),
-            buttonView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            buttonView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor),
             buttonView.bottomAnchor.constraint(
                 equalTo: contentView.bottomAnchor,
                 constant: -ChatCellPadding.ReceivedMessage.MessageButton.bottom

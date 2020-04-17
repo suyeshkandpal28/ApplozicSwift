@@ -96,7 +96,7 @@ public class ReceivedButtonsCell: UITableViewCell {
             messageViewHeight,
 
             buttons.topAnchor.constraint(equalTo: messageView.bottomAnchor, constant: 0),
-            buttons.trailingAnchor.constraint(equalTo: trailingAnchor),
+            buttons.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor),
             buttons.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingMargin),
             buttons.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
         ])

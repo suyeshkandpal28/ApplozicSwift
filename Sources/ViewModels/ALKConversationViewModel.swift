@@ -351,7 +351,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             if messageModel.isMyMessage {
                 guard let message = messageModel.message, !message.trim().isEmpty else {
                     return
-                        ALKMyQuickReplyCell
+                        ALKMyQuickReplyButtonCell
                             .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                             .cached(with: cacheIdentifier)
                 }
@@ -362,7 +362,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
             } else {
                 guard let message = messageModel.message, !message.trim().isEmpty else {
                     return
-                        ALKFriendQuickReplyCell
+                        ALKFriendQuickReplyButtonCell
                             .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                             .cached(with: cacheIdentifier)
                 }
@@ -374,11 +374,23 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
         case .button:
             if messageModel.isMyMessage {
+                guard let message = messageModel.message, !message.trim().isEmpty else {
+                    return
+                        ALKMyQuickReplyButtonCell
+                            .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
+                            .cached(with: cacheIdentifier)
+                }
                 return
                     ALKMyMessageButtonCell
                         .rowHeigh(viewModel: messageModel, width: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             } else {
+                guard let message = messageModel.message, !message.trim().isEmpty else {
+                    return
+                        ALKFriendQuickReplyButtonCell
+                            .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
+                            .cached(with: cacheIdentifier)
+                }
                 return
                     ALKFriendMessageButtonCell
                         .rowHeigh(viewModel: messageModel, width: UIScreen.main.bounds.width)

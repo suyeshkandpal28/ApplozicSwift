@@ -5,11 +5,12 @@
 //  Created by Shivam Pokhriyal on 18/02/19.
 //
 
+import Kingfisher
 import UIKit
 
 // MARK: - `ALKListTemplateCell` for sender side.
 
-public class ALKMyListTemplateCell: ALKListTemplateCell {
+public class ALKMyMessageListTemplateCell: ALKListTemplateCell {
     var messageView = ALKMyMessageView()
     lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
 
@@ -51,7 +52,7 @@ public class ALKMyListTemplateCell: ALKListTemplateCell {
 
 // MARK: - `ALKListTemplateCell` for receiver side.
 
-public class ALKFriendListTemplateCell: ALKListTemplateCell {
+public class ALKFriendMessageListTemplateCell: ALKListTemplateCell {
     var messageView = ALKFriendMessageView()
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)
 
@@ -90,6 +91,193 @@ public class ALKFriendListTemplateCell: ALKListTemplateCell {
         listTemplateView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: templateLeftPadding).isActive = true
         listTemplateView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1 * templateRightPadding).isActive = true
         listTemplateHeight.isActive = true
+    }
+}
+
+// MARK: - `ALKMyListTemplateCell` for sender side if text message is not there.
+
+public class ALKMyListTemplateCell: ALKListTemplateCell {
+    enum Padding {
+        enum StateView {
+            static let bottom: CGFloat = 1
+            static let right: CGFloat = 2
+            static let height: CGFloat = 9
+            static let width: CGFloat = 17
+        }
+
+        enum TimeLabel {
+            static let right: CGFloat = 2
+            static let bottom: CGFloat = 2
+        }
+    }
+
+    var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.isOpaque = true
+        return lb
+    }()
+
+    var stateView: UIImageView = {
+        let sv = UIImageView()
+        sv.isUserInteractionEnabled = false
+        sv.contentMode = .center
+        return sv
+    }()
+
+    public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
+        super.update(viewModel: viewModel, maxWidth: maxWidth)
+        timeLabel.text = viewModel.time
+        setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
+    }
+
+    public override class func rowHeight(viewModel: ALKMessageViewModel, maxWidth: CGFloat) -> CGFloat {
+        let messageWidth = maxWidth -
+            (ChatCellPadding.SentMessage.Message.left + ChatCellPadding.SentMessage.Message.right)
+        let height = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
+        let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
+        return height + templateHeight + paddingBelowCell
+    }
+
+    override func setupStyle() {
+        super.setupStyle()
+        timeLabel.setStyle(ALKMessageStyle.time)
+        setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
+    }
+
+    override func setupConstraints() {
+        let leftPadding = ChatCellPadding.SentMessage.Message.left
+        let rightPadding = ChatCellPadding.SentMessage.Message.right
+        contentView.addViewsForAutolayout(views: [stateView, timeLabel, listTemplateView])
+
+        let width = CGFloat(ALKMessageStyle.sentBubble.widthPadding)
+        let templateLeftPadding = leftPadding + width
+        let templateRightPadding = rightPadding - width
+        listTemplateView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        listTemplateView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: templateLeftPadding).isActive = true
+        listTemplateView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1 * templateRightPadding).isActive = true
+        listTemplateHeight.isActive = true
+
+        stateView.bottomAnchor.constraint(equalTo: listTemplateView.bottomAnchor, constant: -1 * Padding.StateView.bottom).isActive = true
+
+        stateView.trailingAnchor.constraint(equalTo: listTemplateView.leadingAnchor, constant: -1 * Padding.StateView.right).isActive = true
+
+        stateView.heightAnchor.constraint(equalToConstant: Padding.StateView.height).isActive = true
+
+        stateView.widthAnchor.constraint(equalToConstant: Padding.StateView.width).isActive = true
+
+        timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor).isActive = true
+
+        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * Padding.TimeLabel.right).isActive = true
+
+        timeLabel.bottomAnchor.constraint(equalTo: listTemplateView.bottomAnchor, constant: Padding.TimeLabel.bottom).isActive = true
+    }
+}
+
+// MARK: - `ALKFriendListTemplateCell` for receiver side if message text is not there.
+
+public class ALKFriendListTemplateCell: ALKListTemplateCell {
+    var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.isOpaque = true
+        return lb
+    }()
+
+    var bubbleView: UIImageView = {
+        let bv = UIImageView()
+        bv.clipsToBounds = true
+        bv.isUserInteractionEnabled = false
+        bv.isOpaque = true
+        return bv
+    }()
+
+    var avatarImageView: UIImageView = {
+        let imv = UIImageView()
+        imv.contentMode = .scaleAspectFill
+        imv.clipsToBounds = true
+        let layer = imv.layer
+        layer.cornerRadius = 18.5
+        layer.masksToBounds = true
+        imv.isUserInteractionEnabled = true
+        return imv
+    }()
+
+    var nameLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.isOpaque = true
+        return label
+    }()
+
+    enum Padding {
+        enum NameLabel {
+            static let top: CGFloat = 6
+            static let leading: CGFloat = 57
+            static let trailing: CGFloat = 57
+            static let height: CGFloat = 16
+        }
+
+        enum TimeLabel {
+            static let leading: CGFloat = 10
+        }
+
+        enum AvatarImageView {
+            static let top: CGFloat = 18
+            static let leading: CGFloat = 9
+            static let height: CGFloat = 37
+        }
+    }
+
+    public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
+        let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
+        if let url = viewModel.avatarURL {
+            let resource = ImageResource(downloadURL: url, cacheKey: url.absoluteString)
+            avatarImageView.kf.setImage(with: resource, placeholder: placeHolder)
+        } else {
+            avatarImageView.image = placeHolder
+        }
+        nameLabel.text = viewModel.displayName
+        super.update(viewModel: viewModel, maxWidth: maxWidth)
+        timeLabel.text = viewModel.time
+    }
+
+    public override class func rowHeight(viewModel: ALKMessageViewModel,
+                                         maxWidth: CGFloat) -> CGFloat {
+        let height: CGFloat = 30 // 6 + 16 + 4 + 2 + 2
+        let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
+        return height + templateHeight + paddingBelowCell + 5 // Padding between messages
+    }
+
+    override func setupStyle() {
+        super.setupStyle()
+        nameLabel.setStyle(ALKMessageStyle.displayName)
+        timeLabel.setStyle(ALKMessageStyle.time)
+    }
+
+    override func setupConstraints() {
+        contentView.addViewsForAutolayout(views: [nameLabel, avatarImageView, listTemplateView, timeLabel])
+
+        let leftPadding = ChatCellPadding.ReceivedMessage.Message.left
+        let rightPadding = ChatCellPadding.ReceivedMessage.Message.right
+
+        nameLabel.topAnchor.constraint(equalTo: topAnchor, constant: Padding.NameLabel.top).isActive = true
+        nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Padding.NameLabel.leading).isActive = true
+        nameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Padding.NameLabel.trailing).isActive = true
+        nameLabel.heightAnchor.constraint(equalToConstant: Padding.NameLabel.height).isActive = true
+
+        avatarImageView.topAnchor.constraint(equalTo: topAnchor, constant: Padding.AvatarImageView.top).isActive = true
+        avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Padding.AvatarImageView.leading).isActive = true
+        avatarImageView.heightAnchor.constraint(equalToConstant: Padding.AvatarImageView.height).isActive = true
+        avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor).isActive = true
+
+        let width = CGFloat(ALKMessageStyle.receivedBubble.widthPadding)
+        let templateLeftPadding = leftPadding + 64 - width
+        let templateRightPadding = rightPadding - width
+        listTemplateView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5).isActive = true
+        listTemplateView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: templateLeftPadding).isActive = true
+        listTemplateView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -1 * templateRightPadding).isActive = true
+        listTemplateHeight.isActive = true
+        timeLabel.leadingAnchor.constraint(equalTo: listTemplateView.trailingAnchor, constant: Padding.TimeLabel.leading).isActive = true
+        timeLabel.bottomAnchor.constraint(equalTo: listTemplateView.bottomAnchor).isActive = true
     }
 }
 

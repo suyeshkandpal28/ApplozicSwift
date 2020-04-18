@@ -413,23 +413,35 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 return cell
             }
         case .listTemplate:
-            if message.isMyMessage {
-                let cell: ALKMyListTemplateCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                cell.update(chatBar: chatBar)
-                return cell
-            } else {
-                let cell: ALKFriendListTemplateCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                cell.update(chatBar: chatBar)
-                cell.templateSelected = { [weak self] defaultText, action in
-                    guard let weakSelf = self else { return }
-                    weakSelf.listTemplateSelected(defaultText: defaultText, action: action)
+
+            var cell = ALKListTemplateCell()
+            if let messageString = message.message, !messageString.trim().isEmpty {
+                if message.isMyMessage {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageListTemplateCell
+                } else {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageListTemplateCell
+                    cell.templateSelected = { [weak self] defaultText, action in
+                        guard let weakSelf = self else { return }
+                        weakSelf.listTemplateSelected(defaultText: defaultText, action: action)
+                    }
                 }
-                return cell
+
+            } else {
+                if message.isMyMessage {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyListTemplateCell
+                } else {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendListTemplateCell
+                    cell.templateSelected = { [weak self] defaultText, action in
+                        guard let weakSelf = self else { return }
+                        weakSelf.listTemplateSelected(defaultText: defaultText, action: action)
+                    }
+                }
             }
+            cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+            cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+            cell.update(chatBar: chatBar)
+            return cell
+
         case .document:
             if message.isMyMessage {
                 let cell: ALKMyDocumentCell = tableView.dequeueReusableCell(forIndexPath: indexPath)

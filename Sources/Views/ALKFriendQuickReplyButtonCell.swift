@@ -49,11 +49,6 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
             static let height: CGFloat = 16
         }
 
-        enum TimeLabel {
-            static let leading: CGFloat = 10
-            static let bottom: CGFloat = 2
-        }
-
         enum AvatarImageView {
             static let top: CGFloat = 18
             static let leading: CGFloat = 9

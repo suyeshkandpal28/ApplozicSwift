@@ -447,11 +447,22 @@ open class ALKConversationViewModel: NSObject, Localizable {
         case .imageMessage:
             guard let imageMessage = messageModel.imageMessage() else { return 0 }
             if messageModel.isMyMessage {
+                guard let message = messageModel.message, !message.trim().isEmpty else {
+                    return SentImageCell
+                        .rowHeight(model: imageMessage)
+                        .cached(with: cacheIdentifier)
+                }
+
                 return
                     SentImageMessageCell
                         .rowHeight(model: imageMessage)
                         .cached(with: cacheIdentifier)
             } else {
+                guard let message = messageModel.message, !message.trim().isEmpty else {
+                    return ReceivedImageCell
+                        .rowHeight(model: imageMessage)
+                        .cached(with: cacheIdentifier)
+                }
                 return
                     ReceivedImageMessageCell
                         .rowHeight(model: imageMessage)

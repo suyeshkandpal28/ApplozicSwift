@@ -662,9 +662,12 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
         // Quick reply and button cell
         tableView.register(ALKFriendQuickReplyButtonCell.self)
         tableView.register(ALKMyQuickReplyButtonCell.self)
-        // List template list cell
+        // List template cell
         tableView.register(ALKMyListTemplateCell.self)
         tableView.register(ALKFriendListTemplateCell.self)
+        // Image cell
+        tableView.register(SentImageCell.self)
+        tableView.register(ReceivedImageCell.self)
     }
 
     private func prepareMoreBar() {

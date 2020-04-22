@@ -268,27 +268,32 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 return cell
             }
         case .cardTemplate:
-            if message.isMyMessage {
-                let cell: ALKMyGenericCardCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.showReport = false
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.register(cell: ALKGenericCardCell.self)
-                cell.update(viewModel: message, width: UIScreen.main.bounds.width)
-                cell.menuAction = { [weak self] action in
-                    self?.menuItemSelected(action: action, message: message)
+            var cell = ALKGenericCardBaseCell()
+            if let messageString = message.message, !messageString.trim().isEmpty {
+                if message.isMyMessage {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyGenericCardMessageCell
+                    cell.showReport = false
+                    return cell
+                } else {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendGenericCardMessageCell
+                    cell.showReport = configuration.isReportMessageEnabled
                 }
-                return cell
             } else {
-                let cell: ALKFriendGenericCardCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.showReport = configuration.isReportMessageEnabled
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.register(cell: ALKGenericCardCell.self)
-                cell.update(viewModel: message, width: UIScreen.main.bounds.width)
-                cell.menuAction = { [weak self] action in
-                    self?.menuItemSelected(action: action, message: message)
+                if message.isMyMessage {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyGenericCardCell
+                    cell.showReport = false
+                } else {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendGenericCardCell
+                    cell.showReport = configuration.isReportMessageEnabled
                 }
-                return cell
             }
+            cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+            cell.register(cell: ALKGenericCardCell.self)
+            cell.update(viewModel: message, width: UIScreen.main.bounds.width)
+            cell.menuAction = { [weak self] action in
+                self?.menuItemSelected(action: action, message: message)
+            }
+            return cell
         case .faqTemplate:
             if message.isMyMessage {
                 let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
@@ -633,20 +638,38 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             return
         }
         if message.messageType == .cardTemplate {
-            if message.isMyMessage {
-                guard let cell = cell as? ALKMyGenericCardCell else {
-                    return
+            if let messageString = message.message, !messageString.trim().isEmpty {
+                if message.isMyMessage {
+                    guard let cell = cell as? ALKMyGenericCardMessageCell else {
+                        return
+                    }
+                    cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, indexPath: indexPath)
+                    let index = cell.collectionView.tag
+                    cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
+                } else {
+                    guard let cell = cell as? ALKFriendGenericCardMessageCell else {
+                        return
+                    }
+                    cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, indexPath: indexPath)
+                    let index = cell.collectionView.tag
+                    cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
                 }
-                cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, indexPath: indexPath)
-                let index = cell.collectionView.tag
-                cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
             } else {
-                guard let cell = cell as? ALKFriendGenericCardCell else {
-                    return
+                if message.isMyMessage {
+                    guard let cell = cell as? ALKMyGenericCardCell else {
+                        return
+                    }
+                    cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, indexPath: indexPath)
+                    let index = cell.collectionView.tag
+                    cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
+                } else {
+                    guard let cell = cell as? ALKFriendGenericCardCell else {
+                        return
+                    }
+                    cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, indexPath: indexPath)
+                    let index = cell.collectionView.tag
+                    cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
                 }
-                cell.setCollectionViewDataSourceDelegate(dataSourceDelegate: self, indexPath: indexPath)
-                let index = cell.collectionView.tag
-                cell.collectionView.setContentOffset(CGPoint(x: collectionViewOffsetFromIndex(index), y: 0), animated: false)
             }
         }
     }

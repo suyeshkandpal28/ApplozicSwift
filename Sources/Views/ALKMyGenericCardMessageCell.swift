@@ -5,13 +5,12 @@
 //  Created by Shivam Pokhriyal on 05/12/18.
 //
 
-open class ALKMyGenericCardCell: ALKGenericCardBaseCell {
+open class ALKMyGenericCardMessageCell: ALKGenericCardBaseCell {
     var messageView = ALKMyMessageView()
     lazy var messageViewHeight = messageView.heightAnchor.constraint(equalToConstant: 0)
 
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupViews()
     }
 
     public required init?(coder _: NSCoder) {
@@ -29,6 +28,7 @@ open class ALKMyGenericCardCell: ALKGenericCardBaseCell {
     }
 
     override func setupViews() {
+        super.setupViews()
         setupCollectionView()
 
         let leftPadding = ChatCellPadding.SentMessage.Message.left
@@ -54,6 +54,92 @@ open class ALKMyGenericCardCell: ALKGenericCardBaseCell {
         let messageHeight = ALKMyMessageView.rowHeight(viewModel: viewModel, width: messageWidth)
         let cardHeight = super.cardHeightFor(message: viewModel, width: width)
         return cardHeight + messageHeight + 10 // Extra padding below view. Change this for club/unclub
+    }
+
+    private func setupCollectionView() {
+        let layout: TopRightAlignedFlowLayout = TopRightAlignedFlowLayout()
+        layout.minimumInteritemSpacing = 10
+        layout.scrollDirection = .horizontal
+        collectionView = ALKGenericCardCollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.showsHorizontalScrollIndicator = false
+        collectionView.backgroundColor = .clear
+    }
+}
+
+open class ALKMyGenericCardCell: ALKGenericCardBaseCell {
+    fileprivate var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.isOpaque = true
+        return lb
+    }()
+
+    fileprivate var stateView: UIImageView = {
+        let sv = UIImageView()
+        sv.isUserInteractionEnabled = false
+        sv.contentMode = .center
+        return sv
+    }()
+
+    enum Padding {
+        enum StateView {
+            static let right: CGFloat = 2
+            static let width: CGFloat = 17
+            static let height: CGFloat = 9
+            static let top: CGFloat = 2
+        }
+
+        enum TimeLabel {
+            static let right: CGFloat = 2
+            static let bottom: CGFloat = 2
+        }
+    }
+
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+
+    public required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    open override func update(viewModel: ALKMessageViewModel, width: CGFloat) {
+        // Set time
+        timeLabel.text = viewModel.time
+        timeLabel.setStyle(ALKMessageStyle.time)
+
+        super.update(viewModel: viewModel, width: width)
+        setStatusStyle(statusView: stateView, ALKMessageStyle.messageStatus)
+    }
+
+    override func setupViews() {
+        super.setupViews()
+        setupCollectionView()
+        contentView.addViewsForAutolayout(views: [collectionView, stateView, timeLabel])
+        contentView.bringSubviewToFront(stateView)
+        contentView.bringSubviewToFront(timeLabel)
+
+        let rightPadding = ChatCellPadding.SentMessage.Message.right
+        let width = CGFloat(ALKMessageStyle.sentBubble.widthPadding)
+        let cardRightPadding = rightPadding - width
+
+        collectionView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -cardRightPadding).isActive = true
+        collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
+        collectionView.topAnchor.constraint(equalTo: topAnchor, constant: ALKGenericCardBaseCell.cardTopPadding).isActive = true
+        collectionView.heightAnchor.constraintEqualToAnchor(constant: 0, identifier: ConstraintIdentifier.collectionView.rawValue).isActive = true
+
+        stateView.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: Padding.StateView.top).isActive = true
+        stateView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor, constant: -1 * Padding.StateView.right).isActive = true
+        stateView.heightAnchor.constraint(equalToConstant: Padding.StateView.height).isActive = true
+        stateView.widthAnchor.constraint(equalToConstant: Padding.StateView.width).isActive = true
+
+        timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * Padding.TimeLabel.right).isActive = true
+        timeLabel.topAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
+    }
+
+    public override class func rowHeigh(viewModel: ALKMessageViewModel, width: CGFloat) -> CGFloat {
+        let height: CGFloat = 20 // (6 + 4) + 10 for extra padding
+        let cardHeight = super.cardHeightFor(message: viewModel, width: width)
+        return cardHeight + height + 10 // Extra padding below view. Change this for club/unclub
     }
 
     private func setupCollectionView() {

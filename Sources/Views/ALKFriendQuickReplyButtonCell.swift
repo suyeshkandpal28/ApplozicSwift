@@ -53,6 +53,7 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
             static let top: CGFloat = 18
             static let leading: CGFloat = 9
             static let height: CGFloat = 37
+            static let width: CGFloat = 37
         }
     }
 
@@ -134,7 +135,7 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
             avatarImageView.topAnchor.constraint(equalTo: topAnchor, constant: Padding.AvatarImageView.top),
             avatarImageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Padding.AvatarImageView.leading),
             avatarImageView.heightAnchor.constraint(equalToConstant: Padding.AvatarImageView.height),
-            avatarImageView.widthAnchor.constraint(equalTo: avatarImageView.heightAnchor),
+            avatarImageView.widthAnchor.constraint(equalToConstant: Padding.AvatarImageView.width),
             quickReplyView.topAnchor.constraint(
                 equalTo: nameLabel.bottomAnchor,
                 constant: ChatCellPadding.ReceivedMessage.QuickReply.top

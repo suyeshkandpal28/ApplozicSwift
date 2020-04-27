@@ -355,10 +355,18 @@ open class ALKConversationViewModel: NSObject, Localizable {
             }
         case .faqTemplate:
             guard let faqMessage = messageModel.faqMessage() else { return 0 }
-            if messageModel.isMyMessage {
-                return SentFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
+            if let messasgeString = messageModel.message, !messasgeString.isEmpty {
+                if messageModel.isMyMessage {
+                    return SentFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
+                } else {
+                    return ReceivedFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
+                }
             } else {
-                return ReceivedFAQMessageCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
+                if messageModel.isMyMessage {
+                    return SentFAQCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
+                } else {
+                    return ReceivedFAQCell.rowHeight(model: faqMessage).cached(with: cacheIdentifier)
+                }
             }
         case .quickReply:
             if messageModel.isMyMessage {

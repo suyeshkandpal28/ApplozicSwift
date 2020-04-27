@@ -295,21 +295,40 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             }
             return cell
         case .faqTemplate:
-            if message.isMyMessage {
-                let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                cell.update(model: faqMessage)
-                return cell
-            } else {
-                let cell: ReceivedFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                cell.update(model: faqMessage)
-                cell.faqSelected = {
-                    [weak self] _, title in
-                    guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
-                    viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
+            if let messageString = message.message, !messageString.isEmpty {
+                if message.isMyMessage {
+                    let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                    cell.update(model: faqMessage)
+                    return cell
+                } else {
+                    let cell: ReceivedFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                    cell.update(model: faqMessage)
+                    cell.faqSelected = {
+                        [weak self] _, title in
+                        guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
+                        viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
+                    }
+                    return cell
                 }
-                return cell
+            } else {
+                if message.isMyMessage {
+                    let cell: SentFAQCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                    cell.update(model: faqMessage)
+                    return cell
+                } else {
+                    let cell: ReceivedFAQCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                    cell.update(model: faqMessage)
+                    cell.faqSelected = {
+                        [weak self] _, title in
+                        guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
+                        viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
+                    }
+                    return cell
+                }
             }
         case .quickReply:
             if message.isMyMessage {

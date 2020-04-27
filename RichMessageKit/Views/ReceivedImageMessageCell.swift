@@ -193,7 +193,7 @@ public class ReceivedImageCell: UITableViewCell {
         timeLabel.text = model.message.time
 
         /// Set frame
-        let height = ReceivedImageMessageCell.rowHeight(model: model)
+        let height = ReceivedImageCell.rowHeight(model: model)
         frame.size = CGSize(width: Config.maxWidth, height: height)
 
         imageUrl = model.url

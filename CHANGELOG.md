@@ -41,6 +41,7 @@ If you don't want to use the above option, You can white list some the websites 
 You can read more on Property List Keys
 [here](https://developer.apple.com/documentation/bundleresources/information_property_list/nsapptransportsecurity/nsexceptiondomains)
 
+-[CM-224] Add support for rich message templates without any text message
 ### Fixes
 - [CM-146] Fixed back button issue in searched conversation view.
 

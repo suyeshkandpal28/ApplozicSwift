@@ -189,7 +189,7 @@ public class SentImageCell: UITableViewCell {
         layoutIfNeeded()
 
         /// Set frame
-        let height = SentImageMessageCell.rowHeight(model: model)
+        let height = SentImageCell.rowHeight(model: model)
         frame.size = CGSize(width: Config.maxWidth, height: height)
 
         imageUrl = model.url
@@ -239,7 +239,7 @@ public class SentImageCell: UITableViewCell {
             stateView.trailingAnchor.constraint(equalTo: imageBubble.leadingAnchor, constant: -1 * SentMessageView.Config.TimeLabel.leftPadding),
 
             timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
-            timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: stateView.trailingAnchor, constant: SentMessageView.Config.TimeLabel.leftPadding),
+            timeLabel.leadingAnchor.constraint(greaterThanOrEqualTo: stateView.leadingAnchor, constant: SentMessageView.Config.TimeLabel.leftPadding),
             timeLabelWidth,
             timeLabelHeight,
             timeLabel.trailingAnchor.constraint(equalTo: stateView.leadingAnchor, constant: -1 * SentMessageView.Config.MessageView.leftPadding),

@@ -98,7 +98,7 @@ public class SentFAQMessageCell: UITableViewCell {
             messageViewHeight,
 
             faqView.topAnchor.constraint(equalTo: messageView.bottomAnchor),
-            faqView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: Config.faqLeftPadding),
+            faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Config.faqLeftPadding),
             faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.padding.right),
             faqView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
         ])

@@ -269,21 +269,21 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             }
         case .cardTemplate:
             var cell = ALKGenericCardBaseCell()
-            if let messageString = message.message, !messageString.trim().isEmpty {
+            if message.isMessageEmpty {
+                if message.isMyMessage {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyGenericCardCell
+                    cell.showReport = false
+                } else {
+                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendGenericCardCell
+                    cell.showReport = configuration.isReportMessageEnabled
+                }
+            } else {
                 if message.isMyMessage {
                     cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyGenericCardMessageCell
                     cell.showReport = false
                     return cell
                 } else {
                     cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendGenericCardMessageCell
-                    cell.showReport = configuration.isReportMessageEnabled
-                }
-            } else {
-                if message.isMyMessage {
-                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyGenericCardCell
-                    cell.showReport = false
-                } else {
-                    cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendGenericCardCell
                     cell.showReport = configuration.isReportMessageEnabled
                 }
             }
@@ -295,24 +295,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             }
             return cell
         case .faqTemplate:
-            if let messageString = message.message, !messageString.isEmpty {
-                if message.isMyMessage {
-                    let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                    cell.update(model: faqMessage)
-                    return cell
-                } else {
-                    let cell: ReceivedFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
-                    cell.update(model: faqMessage)
-                    cell.faqSelected = {
-                        [weak self] _, title in
-                        guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
-                        viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
-                    }
-                    return cell
-                }
-            } else {
+            if message.isMessageEmpty {
                 if message.isMyMessage {
                     let cell: SentFAQCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
@@ -329,24 +312,34 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     }
                     return cell
                 }
+            } else {
+                if message.isMyMessage {
+                    let cell: SentFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                    cell.update(model: faqMessage)
+                    return cell
+                } else {
+                    let cell: ReceivedFAQMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    guard let faqMessage = message.faqMessage() else { return UITableViewCell() }
+                    cell.update(model: faqMessage)
+                    cell.faqSelected = {
+                        [weak self] _, title in
+                        guard let weakSelf = self, let viewModel = weakSelf.viewModel else { return }
+                        viewModel.send(message: title, metadata: weakSelf.configuration.messageMetadata)
+                    }
+                    return cell
+                }
             }
         case .quickReply:
-            if message.isMyMessage {
-                guard let messageString = message.message, !messageString.trim().isEmpty else {
+            if message.isMessageEmpty {
+                if message.isMyMessage {
                     let cell: ALKMyQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message)
                     cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                     cell.update(chatBar: chatBar)
                     return cell
-                }
-                let cell: ALKMyMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                cell.update(chatBar: chatBar)
-                return cell
-            } else {
-                guard let messageString = message.message, !messageString.trim().isEmpty else {
+                } else {
                     let cell: ALKFriendQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message)
@@ -367,44 +360,46 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     }
                     return cell
                 }
-                let cell: ALKFriendMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message)
-                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                cell.update(chatBar: chatBar)
-                guard let template = message.payloadFromMetadata() else {
+            } else {
+                if message.isMyMessage {
+                    let cell: ALKMyMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                    cell.update(chatBar: chatBar)
+                    return cell
+                } else {
+                    let cell: ALKFriendMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                    cell.update(viewModel: message)
+                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                    cell.update(chatBar: chatBar)
+                    guard let template = message.payloadFromMetadata() else {
+                        return cell
+                    }
+                    cell.quickReplySelected = { [weak self] index, title in
+                        guard let weakSelf = self else { return }
+                        weakSelf.quickReplySelected(
+                            index: index,
+                            title: title,
+                            template: template,
+                            message: message,
+                            isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
+                        )
+                    }
                     return cell
                 }
-                cell.quickReplySelected = { [weak self] index, title in
-                    guard let weakSelf = self else { return }
-                    weakSelf.quickReplySelected(
-                        index: index,
-                        title: title,
-                        template: template,
-                        message: message,
-                        isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
-                    )
-                }
-                return cell
             }
         case .button:
-            if message.isMyMessage {
-                guard let messageString = message.message, !messageString.trim().isEmpty else {
+            if message.isMessageEmpty {
+                if message.isMyMessage {
+                    /// No button action if message sent by same user.
                     let cell: ALKMyQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message)
                     cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                     cell.update(chatBar: chatBar)
                     return cell
-                }
-                /// No button action if message sent by same user.
-                let cell: ALKMyMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                cell.update(chatBar: chatBar)
-                return cell
-            } else {
-                guard let messageString = message.message, !messageString.trim().isEmpty else {
+                } else {
                     let cell: ALKFriendQuickReplyButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message)
@@ -421,32 +416,40 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     }
                     return cell
                 }
-                let cell: ALKFriendMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                cell.setLocalizedStringFileName(configuration.localizedStringFileName)
-                cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
-                cell.update(chatBar: chatBar)
-                cell.buttonSelected = { [weak self] index, title in
-                    guard let weakSelf = self else { return }
-                    weakSelf.messageButtonSelected(
-                        index: index,
-                        title: title,
-                        message: message,
-                        isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
-                    )
-                }
-                return cell
-            }
-        case .listTemplate:
-
-            if let messageString = message.message, !messageString.trim().isEmpty {
+            } else {
                 if message.isMyMessage {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageListTemplateCell
+                    let cell: ALKMyMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                     cell.update(chatBar: chatBar)
                     return cell
                 } else {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageListTemplateCell
+                    let cell: ALKFriendMessageButtonCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                    cell.update(chatBar: chatBar)
+                    cell.buttonSelected = { [weak self] index, title in
+                        guard let weakSelf = self else { return }
+                        weakSelf.messageButtonSelected(
+                            index: index,
+                            title: title,
+                            message: message,
+                            isButtonClickDisabled: weakSelf.configuration.disableRichMessageButtonAction
+                        )
+                    }
+                    return cell
+                }
+            }
+        case .listTemplate:
+            if message.isMessageEmpty {
+                if message.isMyMessage {
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyListTemplateCell
+                    cell.setLocalizedStringFileName(configuration.localizedStringFileName)
+                    cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
+                    cell.update(chatBar: chatBar)
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendListTemplateCell
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                     cell.update(chatBar: chatBar)
@@ -456,16 +459,15 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     }
                     return cell
                 }
-
             } else {
                 if message.isMyMessage {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyListTemplateCell
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyMessageListTemplateCell
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                     cell.update(chatBar: chatBar)
                     return cell
                 } else {
-                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendListTemplateCell
+                    let cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendMessageListTemplateCell
                     cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                     cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                     cell.update(chatBar: chatBar)
@@ -555,24 +557,23 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
             }
         case .imageMessage:
             guard let imageMessage = message.imageMessage() else { return UITableViewCell() }
-
-            if let messageString = message.message, !messageString.trim().isEmpty {
-                if message.isMyMessage {
-                    let cell: SentImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.update(model: imageMessage)
-                    return cell
-                } else {
-                    let cell: ReceivedImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
-                    cell.update(model: imageMessage)
-                    return cell
-                }
-            } else {
+            if message.isMessageEmpty {
                 if message.isMyMessage {
                     let cell: SentImageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.update(model: imageMessage)
                     return cell
                 } else {
                     let cell: ReceivedImageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    cell.update(model: imageMessage)
+                    return cell
+                }
+            } else {
+                if message.isMyMessage {
+                    let cell: SentImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                    cell.update(model: imageMessage)
+                    return cell
+                } else {
+                    let cell: ReceivedImageMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                     cell.update(model: imageMessage)
                     return cell
                 }

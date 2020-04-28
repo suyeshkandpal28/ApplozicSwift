@@ -281,7 +281,6 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                 if message.isMyMessage {
                     cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKMyGenericCardMessageCell
                     cell.showReport = false
-                    return cell
                 } else {
                     cell = tableView.dequeueReusableCell(forIndexPath: indexPath) as ALKFriendGenericCardMessageCell
                     cell.showReport = configuration.isReportMessageEnabled

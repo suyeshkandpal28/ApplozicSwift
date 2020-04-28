@@ -247,9 +247,13 @@ public class ReceivedFAQCell: UITableViewCell {
         let totalHeightPadding = Config.padding.top + Config.padding.bottom
         let calculatedHeight = totalHeightPadding + config.DisplayName.height
 
+        let timeLabelSize = model.message.time.rectWithConstrainedWidth(
+            ReceivedMessageView.Config.TimeLabel.maxWidth,
+            font: MessageTheme.receivedMessage.time.font)
+
         let faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage)
 
-        return calculatedHeight + faqHeight + Config.padding.bottom + Config.padding.top // top will be already
+        return calculatedHeight + faqHeight + timeLabelSize.height.rounded(.up)
     }
 
     // MARK: - Private helper methods
@@ -275,7 +279,7 @@ public class ReceivedFAQCell: UITableViewCell {
             faqView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor),
             faqView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: leadingMargin),
             faqView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Config.faqRightPadding),
-            faqView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
+            faqView.bottomAnchor.constraint(equalTo: timeLabel.topAnchor, constant: -1 * Config.padding.bottom),
 
             timeLabel.leadingAnchor.constraint(equalTo: faqView.leadingAnchor, constant: ReceivedMessageView.Config.TimeLabel.leftPadding),
             timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),

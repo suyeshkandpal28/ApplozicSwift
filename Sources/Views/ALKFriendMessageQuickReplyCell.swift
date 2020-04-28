@@ -5,7 +5,7 @@
 //  Created by Shivam Pokhriyal on 07/01/19.
 //
 
-public class ALKFriendQuickReplyMessageCell: ALKChatBaseCell<ALKMessageViewModel> {
+public class ALKFriendMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     var messageView = ALKFriendMessageView()
     var quickReplyView = SuggestedReplyView()
 
@@ -90,7 +90,7 @@ public class ALKFriendQuickReplyMessageCell: ALKChatBaseCell<ALKMessageViewModel
     }
 }
 
-extension ALKFriendQuickReplyMessageCell: Tappable {
+extension ALKFriendMessageQuickReplyCell: Tappable {
     public func didTap(index: Int?, title: String) {
         guard let quickReplySelected = quickReplySelected, let index = index else { return }
         quickReplySelected(index, title)

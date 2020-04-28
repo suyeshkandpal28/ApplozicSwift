@@ -111,18 +111,22 @@ public class ALKMyListTemplateCell: ALKListTemplateCell {
         }
     }
 
-    var timeLabel: UILabel = {
+    // MARK: Fileprivate properties
+
+    fileprivate var timeLabel: UILabel = {
         let lb = UILabel()
         lb.isOpaque = true
         return lb
     }()
 
-    var stateView: UIImageView = {
+    fileprivate var stateView: UIImageView = {
         let sv = UIImageView()
         sv.isUserInteractionEnabled = false
         sv.contentMode = .center
         return sv
     }()
+
+    // MARK: - Public methods
 
     public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
         super.update(viewModel: viewModel, maxWidth: maxWidth)
@@ -137,6 +141,8 @@ public class ALKMyListTemplateCell: ALKListTemplateCell {
         let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
         return height + templateHeight + paddingBelowCell
     }
+
+    // MARK: - Override methods
 
     override func setupStyle() {
         super.setupStyle()
@@ -176,38 +182,6 @@ public class ALKMyListTemplateCell: ALKListTemplateCell {
 // MARK: - `ALKFriendListTemplateCell` for receiver side if message text is not there.
 
 public class ALKFriendListTemplateCell: ALKListTemplateCell {
-    var timeLabel: UILabel = {
-        let lb = UILabel()
-        lb.isOpaque = true
-        return lb
-    }()
-
-    var bubbleView: UIImageView = {
-        let bv = UIImageView()
-        bv.clipsToBounds = true
-        bv.isUserInteractionEnabled = false
-        bv.isOpaque = true
-        return bv
-    }()
-
-    var avatarImageView: UIImageView = {
-        let imv = UIImageView()
-        imv.contentMode = .scaleAspectFill
-        imv.clipsToBounds = true
-        let layer = imv.layer
-        layer.cornerRadius = 18.5
-        layer.masksToBounds = true
-        imv.isUserInteractionEnabled = true
-        return imv
-    }()
-
-    var nameLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 1
-        label.isOpaque = true
-        return label
-    }()
-
     enum Padding {
         enum NameLabel {
             static let top: CGFloat = 6
@@ -226,6 +200,42 @@ public class ALKFriendListTemplateCell: ALKListTemplateCell {
             static let height: CGFloat = 37
         }
     }
+
+    // MARK: Fileprivate properties
+
+    fileprivate var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.isOpaque = true
+        return lb
+    }()
+
+    fileprivate var bubbleView: UIImageView = {
+        let bv = UIImageView()
+        bv.clipsToBounds = true
+        bv.isUserInteractionEnabled = false
+        bv.isOpaque = true
+        return bv
+    }()
+
+    fileprivate var avatarImageView: UIImageView = {
+        let imv = UIImageView()
+        imv.contentMode = .scaleAspectFill
+        imv.clipsToBounds = true
+        let layer = imv.layer
+        layer.cornerRadius = 18.5
+        layer.masksToBounds = true
+        imv.isUserInteractionEnabled = true
+        return imv
+    }()
+
+    fileprivate var nameLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.isOpaque = true
+        return label
+    }()
+
+    // MARK: - Public methods
 
     public override func update(viewModel: ALKMessageViewModel, maxWidth: CGFloat) {
         let placeHolder = UIImage(named: "placeholder", in: Bundle.applozic, compatibleWith: nil)
@@ -246,6 +256,8 @@ public class ALKFriendListTemplateCell: ALKListTemplateCell {
         let templateHeight = super.rowHeight(viewModel: viewModel, maxWidth: maxWidth)
         return height + templateHeight + paddingBelowCell + 5 // Padding between messages
     }
+
+    // MARK: - Override methods
 
     override func setupStyle() {
         super.setupStyle()

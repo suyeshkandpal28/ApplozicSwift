@@ -340,7 +340,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     cell.update(chatBar: chatBar)
                     return cell
                 }
-                let cell: ALKMyQuickReplyMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                let cell: ALKMyMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                 cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)
                 cell.update(chatBar: chatBar)
@@ -367,7 +367,7 @@ extension ALKConversationViewController: UITableViewDelegate, UITableViewDataSou
                     }
                     return cell
                 }
-                let cell: ALKFriendQuickReplyMessageCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
+                let cell: ALKFriendMessageQuickReplyCell = tableView.dequeueReusableCell(forIndexPath: indexPath)
                 cell.setLocalizedStringFileName(configuration.localizedStringFileName)
                 cell.update(viewModel: message)
                 cell.update(viewModel: message, maxWidth: UIScreen.main.bounds.width)

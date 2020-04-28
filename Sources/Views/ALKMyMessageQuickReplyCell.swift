@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class ALKMyQuickReplyMessageCell: ALKChatBaseCell<ALKMessageViewModel> {
+public class ALKMyMessageQuickReplyCell: ALKChatBaseCell<ALKMessageViewModel> {
     var messageView = ALKMyMessageView()
     var quickReplyView = SuggestedReplyView()
     lazy var messageViewHeight = self.messageView.heightAnchor.constraint(equalToConstant: 0)

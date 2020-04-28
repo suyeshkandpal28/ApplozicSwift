@@ -377,7 +377,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
                             .cached(with: cacheIdentifier)
                 }
                 return
-                    ALKMyQuickReplyMessageCell
+                    ALKMyMessageQuickReplyCell
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             } else {
@@ -389,7 +389,7 @@ open class ALKConversationViewModel: NSObject, Localizable {
                 }
 
                 return
-                    ALKFriendQuickReplyMessageCell
+                    ALKFriendMessageQuickReplyCell
                         .rowHeight(viewModel: messageModel, maxWidth: UIScreen.main.bounds.width)
                         .cached(with: cacheIdentifier)
             }

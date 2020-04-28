@@ -166,6 +166,8 @@ public class ReceivedImageCell: UITableViewCell {
     fileprivate var imageBubbleWidth: CGFloat
     fileprivate var imageUrl: String?
 
+    // MARK: Initializer
+
     public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         imageBubble = ImageContainer(frame: .zero, maxWidth: Config.maxWidth, isMyMessage: false)
         imageBubbleWidth = Config.maxWidth * ImageBubbleTheme.receivedMessage.widthRatio
@@ -178,6 +180,8 @@ public class ReceivedImageCell: UITableViewCell {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    // MARK: Public methods
 
     /// Updated the `ImageMessageView`.
     ///
@@ -195,6 +199,15 @@ public class ReceivedImageCell: UITableViewCell {
         /// Set frame
         let height = ReceivedImageCell.rowHeight(model: model)
         frame.size = CGSize(width: Config.maxWidth, height: height)
+
+        // Set time
+        timeLabel.text = model.message.time
+        let timeLabelSize = model.message.time.rectWithConstrainedWidth(
+            ReceivedMessageView.Config.TimeLabel.maxWidth,
+            font: MessageTheme.receivedMessage.time.font
+        )
+        timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
+        timeLabelWidth.constant = timeLabelSize.width.rounded(.up)
 
         imageUrl = model.url
         imageBubble.update(model: model)
@@ -223,6 +236,8 @@ public class ReceivedImageCell: UITableViewCell {
         return calculatedHeight + imageBubbleHeight + Config.padding.bottom + Config.padding.top
     }
 
+    // MARK: Private methods
+
     private func setupConstraints() {
         let nameRightPadding = max(Config.padding.right, ReceivedMessageView.Config.DisplayName.rightPadding)
         addViewsForAutolayout(views: [avatarImageView, nameLabel, imageBubble, timeLabel])
@@ -247,7 +262,7 @@ public class ReceivedImageCell: UITableViewCell {
             imageBubble.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
 
             timeLabel.leadingAnchor.constraint(equalTo: imageBubble.trailingAnchor, constant: ReceivedMessageView.Config.TimeLabel.leftPadding),
-            timeLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * Config.padding.bottom),
+            timeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -1 * Config.padding.bottom),
             timeLabelWidth,
             timeLabelHeight,
             timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -1 * Config.padding.right),

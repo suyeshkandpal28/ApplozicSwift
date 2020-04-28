@@ -101,20 +101,20 @@ extension ALMessage: ALKChatViewModelProtocol {
         case .faqTemplate:
             return message ?? "FAQ"
         case .quickReply:
-            return message
+            return message ?? "Quick reply"
         case .button:
-            return message
+            return message ?? "Button"
         case .listTemplate:
-            return message
+            return message ?? "List"
         case .cardTemplate:
-            return message
+            return message ?? "Card"
         case .imageMessage:
             return message ?? "Photo"
         case .email:
             guard let channelMetadata = alChannel?.metadata,
                 let messageText = channelMetadata[ChannelMetadataKey.conversationSubject]
-            else {
-                return message
+                else {
+                    return message
             }
             return messageText as? String
         case .document:

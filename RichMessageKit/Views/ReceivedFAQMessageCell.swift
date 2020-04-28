@@ -249,7 +249,8 @@ public class ReceivedFAQCell: UITableViewCell {
 
         let timeLabelSize = model.message.time.rectWithConstrainedWidth(
             ReceivedMessageView.Config.TimeLabel.maxWidth,
-            font: MessageTheme.receivedMessage.time.font)
+            font: MessageTheme.receivedMessage.time.font
+        )
 
         let faqHeight = FAQMessageView.rowHeight(model: model, maxWidth: ReceivedFAQMessageCell.faqWidth, style: FAQMessageTheme.receivedMessage)
 

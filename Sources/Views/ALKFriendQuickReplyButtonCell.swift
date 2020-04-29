@@ -9,38 +9,6 @@ import Foundation
 import Kingfisher
 
 public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel> {
-    var timeLabel: UILabel = {
-        let lb = UILabel()
-        lb.isOpaque = true
-        return lb
-    }()
-
-    var bubbleView: UIImageView = {
-        let bv = UIImageView()
-        bv.clipsToBounds = true
-        bv.isUserInteractionEnabled = false
-        bv.isOpaque = true
-        return bv
-    }()
-
-    var avatarImageView: UIImageView = {
-        let imv = UIImageView()
-        imv.contentMode = .scaleAspectFill
-        imv.clipsToBounds = true
-        let layer = imv.layer
-        layer.cornerRadius = 18.5
-        layer.masksToBounds = true
-        imv.isUserInteractionEnabled = true
-        return imv
-    }()
-
-    var nameLabel: UILabel = {
-        let label = UILabel()
-        label.numberOfLines = 1
-        label.isOpaque = true
-        return label
-    }()
-
     enum Padding {
         enum NameLabel {
             static let top: CGFloat = 6
@@ -55,7 +23,48 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
             static let height: CGFloat = 37
             static let width: CGFloat = 37
         }
+
+        enum TimeLabel {
+            static var leading: CGFloat = 2.0
+            static var bottom: CGFloat = 2.0
+            static let maxWidth: CGFloat = 200
+        }
     }
+
+    fileprivate var timeLabel: UILabel = {
+        let lb = UILabel()
+        lb.isOpaque = true
+        return lb
+    }()
+
+    fileprivate var bubbleView: UIImageView = {
+        let bv = UIImageView()
+        bv.clipsToBounds = true
+        bv.isUserInteractionEnabled = false
+        bv.isOpaque = true
+        return bv
+    }()
+
+    fileprivate var avatarImageView: UIImageView = {
+        let imv = UIImageView()
+        imv.contentMode = .scaleAspectFill
+        imv.clipsToBounds = true
+        let layer = imv.layer
+        layer.cornerRadius = 18.5
+        layer.masksToBounds = true
+        imv.isUserInteractionEnabled = true
+        return imv
+    }()
+
+    fileprivate var nameLabel: UILabel = {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.isOpaque = true
+        return label
+    }()
+
+    fileprivate lazy var timeLabelWidth = timeLabel.widthAnchor.constraint(equalToConstant: 0)
+    fileprivate lazy var timeLabelHeight = timeLabel.heightAnchor.constraint(equalToConstant: 0)
 
     var quickReplyView = SuggestedReplyView()
     var quickReplySelected: ((_ index: Int, _ title: String) -> Void)?
@@ -85,6 +94,13 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
         }
         nameLabel.text = viewModel.displayName
         timeLabel.text = viewModel.time
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            ReceivedMessageView.Config.TimeLabel.maxWidth,
+            font: MessageTheme.receivedMessage.time.font
+        )
+        timeLabelHeight.constant = timeLabelSize.height.rounded(.up)
+        timeLabelWidth.constant = timeLabelSize.width.rounded(.up)
+
         var suggestedReplyData: SuggestedReplyMessage?
         if viewModel.messageType == .button {
             suggestedReplyData = viewModel.linkOrSubmitButton()
@@ -109,6 +125,12 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
         } else if viewModel.messageType == .quickReply {
             suggestedReplyData = viewModel.suggestedReply()
         }
+
+        let timeLabelSize = viewModel.time!.rectWithConstrainedWidth(
+            Padding.TimeLabel.maxWidth,
+            font: ALKMessageStyle.time.font
+        )
+
         guard let data = suggestedReplyData else {
             return minimumHeight
         }
@@ -118,6 +140,7 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
             + SuggestedReplyView.rowHeight(model: data, maxWidth: quickReplyViewWidth)
             + ChatCellPadding.ReceivedMessage.QuickReply.top
             + ChatCellPadding.ReceivedMessage.QuickReply.bottom
+            + timeLabelSize.height.rounded(.up)
     }
 
     private func setupConstraints() {
@@ -149,11 +172,14 @@ public class ALKFriendQuickReplyButtonCell: ALKChatBaseCell<ALKMessageViewModel>
                 constant: -ChatCellPadding.ReceivedMessage.Message.right
             ),
             quickReplyView.bottomAnchor.constraint(
-                equalTo: contentView.bottomAnchor,
+                equalTo: timeLabel.topAnchor,
                 constant: -ChatCellPadding.ReceivedMessage.QuickReply.bottom
             ),
-            timeLabel.leadingAnchor.constraint(equalTo: quickReplyView.trailingAnchor),
-            timeLabel.bottomAnchor.constraint(equalTo: quickReplyView.bottomAnchor),
+            timeLabel.leadingAnchor.constraint(equalTo: quickReplyView.leadingAnchor, constant: Padding.TimeLabel.leading),
+            timeLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -1 * Padding.TimeLabel.bottom),
+            timeLabelWidth,
+            timeLabelHeight,
+            timeLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor),
         ])
     }
 }

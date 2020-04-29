@@ -37,9 +37,9 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
     var viewModel = ALKConversationListViewModel()
 
     // To check if coming from push notification
-    var contactId: String?
-    var channelKey: NSNumber?
-    var conversationId: NSNumber?
+    public var contactId: String?
+    public var channelKey: NSNumber?
+    public var conversationId: NSNumber?
 
     var tableView: UITableView
 

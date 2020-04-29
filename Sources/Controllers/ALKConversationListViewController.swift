@@ -40,7 +40,6 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
     public var contactId: String?
     public var channelKey: NSNumber?
     public var conversationId: NSNumber?
-
     var tableView: UITableView
 
     lazy var rightBarButtonItem: UIBarButtonItem = {

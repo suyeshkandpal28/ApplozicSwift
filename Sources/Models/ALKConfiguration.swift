@@ -61,6 +61,9 @@ public struct ALKConfiguration {
     /// If true then typing status will show user names.
     public var showNameWhenUserTypesInGroup = true
 
+    /// color of the title
+    public var navigationTitleColor = UIColor.white
+    
     /// If true then start new conversation button shown in the empty state will be disabled
     public var hideEmptyStateStartNewButtonInConversationList = false
 

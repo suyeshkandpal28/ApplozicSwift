@@ -305,7 +305,7 @@ open class ALKConversationListViewController: ALKBaseViewController, Localizable
         push(conversationVC: viewController, with: conversationViewModel)
     }
 
-    @objc func compose() {
+    @objc public func compose() {
         let newChatVC = ALKNewChatViewController(configuration: configuration, viewModel: ALKNewChatViewModel(localizedStringFileName: configuration.localizedStringFileName))
         navigationController?.pushViewController(newChatVC, animated: true)
     }

@@ -351,7 +351,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        self.navigationController?.isNavigationBarHidden = false
         if UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft {
             tableView.semanticContentAttribute = UISemanticContentAttribute.forceRightToLeft
         }
@@ -411,6 +411,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        self.navigationController?.isNavigationBarHidden = true
         stopAudioPlayer()
         chatBar.stopRecording()
         if individualLaunch {

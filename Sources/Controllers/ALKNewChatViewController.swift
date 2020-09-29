@@ -62,6 +62,7 @@ public final class ALKNewChatViewController: ALKBaseViewController, Localizable 
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = false
         edgesForExtendedLayout = []
         activityIndicator.center = CGPoint(x: view.bounds.size.width / 2, y: view.bounds.size.height / 2)
         activityIndicator.color = UIColor.gray
@@ -75,6 +76,9 @@ public final class ALKNewChatViewController: ALKBaseViewController, Localizable 
         })
     }
 
+    public override func viewWillDisappear(_ animated: Bool) {
+        self.navigationController?.isNavigationBarHidden = true
+    }
     // MARK: - Private
 
     private func setupView() {

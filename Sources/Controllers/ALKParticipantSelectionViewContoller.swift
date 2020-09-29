@@ -69,11 +69,12 @@ class ALKParticipantSelectionViewContoller: ALKBaseViewController, Localizable {
         super.viewWillAppear(animated)
         fetchFriendList()
         edgesForExtendedLayout = []
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.navigationBar.isHidden = false
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
     // MARK: - UI Setup

@@ -26,7 +26,10 @@ open class ALKBaseViewController: UIViewController, ALKConfigurable {
 
     open override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+        self.navigationController?.navigationBar.barTintColor = configuration.navigationBarBackgroundColor
+        self.navigationController?.navigationBar.tintColor = configuration.navigationBarItemColor
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor : configuration.navigationTitleColor]
+        self.navigationController?.navigationBar.isTranslucent = false
         if navigationController?.viewControllers.first != self {
             var backImage = UIImage(named: "icon_back", in: Bundle.applozic, compatibleWith: nil)
             backImage = backImage?.imageFlippedForRightToLeftLayoutDirection()

@@ -161,6 +161,7 @@ class ALKPhotoCell: ALKChatBaseCell<ALKMessageViewModel>,
         let storyboard = UIStoryboard.name(storyboard: UIStoryboard.Storyboard.mediaViewer, bundle: Bundle.applozic)
 
         let nav = storyboard.instantiateInitialViewController() as? UINavigationController
+        nav?.loadConfigurations(configuration)
         let vc = nav?.viewControllers.first as? ALKMediaViewerViewController
         let dbService = ALMessageDBService()
         guard let messages = dbService.getAllMessagesWithAttachment(

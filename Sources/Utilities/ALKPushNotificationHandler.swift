@@ -27,7 +27,8 @@ public class ALKPushNotificationHandler: Localizable {
             else { return }
 
             guard let userInfo = notification.userInfo as? [String: Any], let state = userInfo["updateUI"] as? NSNumber else { return }
-
+            //Disabling as of now to avoid unnecessaru vaigation stack
+            /*
             switch state {
             case NSNumber(value: APP_STATE_ACTIVE.rawValue):
                 guard !NotificationHelper().isNotificationForActiveThread(notificationData) else { return }
@@ -45,6 +46,7 @@ public class ALKPushNotificationHandler: Localizable {
             default:
                 weakSelf.launchIndividualChatWith(notificationData: notificationData)
             }
+ */
         })
     }
 

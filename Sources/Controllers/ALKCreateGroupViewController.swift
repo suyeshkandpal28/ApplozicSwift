@@ -124,7 +124,12 @@ final class ALKCreateGroupViewController: ALKBaseViewController, Localizable {
     // MARK: - UI controller
 
     @IBAction func dismisssPress(_: Any) {
-        _ = navigationController?.popViewController(animated: true)
+        if addContactMode == .existingChat {
+            let viewControllers: [UIViewController] = self.navigationController!.viewControllers as [UIViewController]
+            self.navigationController!.popToViewController(viewControllers[viewControllers.count - 3], animated: true)
+        }else{
+            _ = navigationController?.popViewController(animated: true)
+        }
     }
 
     @IBAction func createGroupPress(_: Any) {

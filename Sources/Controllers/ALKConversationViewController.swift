@@ -72,7 +72,7 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
     private var leftMoreBarConstraint: NSLayoutConstraint?
     private var typingNoticeViewHeighConstaint: NSLayoutConstraint?
     var isJustSent: Bool = false
-
+    var bottomSafeArea : CGFloat!
     // MQTT connection retry
     fileprivate var mqttRetryCount = 0
     fileprivate let maxMqttRetryCount = 3
@@ -199,8 +199,12 @@ open class ALKConversationViewController: ALKBaseViewController, Localizable {
 
                 let keyboardHeight = -1 * keyboardSize.height
                 if weakSelf.bottomConstraint?.constant == keyboardHeight { return }
-
-                weakSelf.bottomConstraint?.constant = keyboardHeight
+                if #available(iOS 11.0, *) {
+                    self?.bottomSafeArea = UIApplication.shared.keyWindow?.safeAreaInsets.bottom ?? 0
+                }else{
+                    self?.bottomSafeArea = 0.0
+                }
+                weakSelf.bottomConstraint?.constant = keyboardHeight + (self?.bottomSafeArea)! + 50
 
                 weakSelf.view?.layoutIfNeeded()
 
